@@ -20,11 +20,11 @@
       <div id="unity-warning"> </div>
     </div>
     <script>
-      window.addEventListener("load", function () {
-        if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("ServiceWorker.js");
-        }
-      });
+      // window.addEventListener("load", function () {
+      //   if ("serviceWorker" in navigator) {
+      //     navigator.serviceWorker.register("ServiceWorker.js");
+      //   }
+      // });
 
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
@@ -57,18 +57,18 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/138b897cbeb4447f8286d08805b0f93c.loader.js";
+      var loaderUrl = buildUrl + "/5611540c76a30e0e29a744243ef6a974.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/fa694ffd8eed618a822d9ea21c1ef324.data.unityweb",
-        frameworkUrl: buildUrl + "/4c28203f380beb74eeea986f2a736d0a.framework.js.unityweb",
-        codeUrl: buildUrl + "/98c5d5deff4fb2ec8dd0b553bf10ef61.wasm.unityweb",
+        dataUrl: buildUrl + "/9f630b5a2ba67b89e90b45a9234c90eb.data.unityweb",
+        frameworkUrl: buildUrl + "/80303c272c70e529ae98c0fd9bc7ca22.framework.js.unityweb",
+        codeUrl: buildUrl + "/48df3b11c44702b465321e86ea67441c.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Evoweb",
         productName: "TruqapEP",
         productVersion: "0.0.1",
         showBanner: unityShowBanner,
-        decompressionFallback: true
+        decompressionFallback: true,
       };
 
       // By default Unity keeps WebGL canvas render target size matched with
