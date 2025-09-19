@@ -1,9 +1,9 @@
 const cacheName = "Evoweb-TruqapEP-0.0.1";
 const contentToCache = [
-    "Build/447209a52433f44ae157cf6cde6e737c.loader.js",
-    "Build/80303c272c70e529ae98c0fd9bc7ca22.framework.js.unityweb",
-    "Build/6dfba43f94d06ce785de949bd5c4edd8.data.unityweb",
-    "Build/191b16e61433d65a8e74830ee5bece6e.wasm.unityweb",
+    "Build/f21218d6efbca80fd5a9a01156619e4b.loader.js",
+    "Build/795ac81d0fcdaf8da11e2745e1c930d8.framework.js.unityweb",
+    "Build/5a8d1e7ac01cc7019a4dfe29b365ce09.data.unityweb",
+    "Build/13cf74fc551556b21be9f68a99676655.wasm.unityweb",
     "TemplateData/style.css"
 
 ];
