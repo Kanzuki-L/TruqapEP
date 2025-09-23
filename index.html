@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>TruqapEP</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
-    <link rel="stylesheet" href="TemplateData/style.css" />
-    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="manifest" href="manifest.webmanifest">
 
     <style>
-      /* Portrait lock overlay ONLY (no scaling/resizing of canvas) */
       #orientation-lock {
         display: none;
         position: fixed;
@@ -35,10 +34,9 @@
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
+      <div id="unity-warning"></div>
     </div>
 
-    <!-- Portrait restriction overlay -->
     <div id="orientation-lock" aria-live="polite">
       <div>
         <div style="font-size:48px;line-height:1">🔄</div>
@@ -54,7 +52,6 @@
         }
       });
 
-      var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
@@ -82,7 +79,7 @@
       var loaderUrl = buildUrl + "/09d5daab403c7db0168e42ff42cd5f28.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/a3b0680bd76f46cf3794d4a51d04b089.data.unityweb",
+        dataUrl: buildUrl + "/5705f77204c7d9d55e934627cb49563e.data.unityweb",
         frameworkUrl: buildUrl + "/5dfbd1306a74518362440e5983f7b1e9.framework.js.unityweb",
         codeUrl: buildUrl + "/8dc04937bb29fda4fc162a09edb03533.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
@@ -93,7 +90,6 @@
         decompressionFallback: true
       };
 
-      // (Kept as-is from your file)
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         var meta = document.createElement('meta');
         meta.name = 'viewport';
@@ -101,7 +97,6 @@
         document.getElementsByTagName('head')[0].appendChild(meta);
       }
 
-      // === Portrait restriction only ===
       const orientationLock = document.getElementById("orientation-lock");
       function checkOrientation() {
         const isPortrait = window.innerHeight > window.innerWidth;
@@ -111,7 +106,6 @@
       window.addEventListener("orientationchange", checkOrientation);
       checkOrientation();
 
-      // Unity boot (unchanged)
       loadingBar.style.display = "block";
       var script = document.createElement("script");
       script.src = loaderUrl;
