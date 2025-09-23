@@ -1,205 +1,130 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>TruqapEP</title>
-  <link rel="shortcut icon" href="TemplateData/favicon.ico" />
-  <link rel="stylesheet" href="TemplateData/style.css" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>TruqapEP</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+    <link rel="stylesheet" href="TemplateData/style.css" />
+    <link rel="manifest" href="manifest.webmanifest" />
 
-  <style>
-    :root{
-      --vw: 100vw;
-      --vh: 100vh;
-    }
+    <style>
+      /* Portrait lock overlay ONLY (no scaling/resizing of canvas) */
+      #orientation-lock {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #000;
+        color: #fff;
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+      #orientation-lock.visible { display: flex; }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+    </div>
 
-    html, body {
-      margin: 0; padding: 0; height: 100%;
-      background: #000; overflow: hidden;
-      -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
-    }
-
-    #unity-container {
-      position: fixed; inset: 0;
-      padding-left:  env(safe-area-inset-left);
-      padding-right: env(safe-area-inset-right);
-      padding-top:   env(safe-area-inset-top);
-      padding-bottom:env(safe-area-inset-bottom);
-      display: grid; place-items: center;
-      z-index: 1;
-    }
-
-    #unity-canvas {
-      width:  calc(var(--vw));
-      height: calc(var(--vh));
-      outline: none;
-      touch-action: none;
-    }
-
-    #unity-loading-bar {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: calc(24px + env(safe-area-inset-bottom));
-      width: min(60%, 480px);
-    }
-    #unity-warning {
-      position: absolute;
-      top: calc(8px + env(safe-area-inset-top));
-      left: 50%; transform: translateX(-50%); color: #fff;
-      text-align: center;
-      max-width: 90ch;
-    }
-
-    #orientation-lock {
-      display: none;
-      position: fixed; inset: 0; z-index: 9999;
-      background: #111; color: #fff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      text-align: center; padding: 24px;
-      align-items: center; justify-content: center;
-
-      padding-left:  calc(24px + env(safe-area-inset-left));
-      padding-right: calc(24px + env(safe-area-inset-right));
-      padding-top:   calc(24px + env(safe-area-inset-top));
-      padding-bottom:calc(24px + env(safe-area-inset-bottom));
-    }
-    #orientation-lock.visible { display: flex; }
-    #orientation-card {
-      max-width: 520px; width: 90%;
-      background: #1b1b1b; border-radius: 16px; padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.5);
-    }
-    #orientation-emoji { font-size: 48px; line-height: 1.2; margin-bottom: 10px; }
-  </style>
-</head>
-
-<body>
-  <div id="unity-container">
-    <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
-    <div id="unity-loading-bar">
-      <div id="unity-progress-bar-empty">
-        <div id="unity-progress-bar-full"></div>
+    <!-- Portrait restriction overlay -->
+    <div id="orientation-lock" aria-live="polite">
+      <div>
+        <div style="font-size:48px;line-height:1">🔄</div>
+        <h2 style="margin:12px 0 8px">Rotate your device</h2>
+        <p style="margin:0;opacity:.85">This experience is landscape-only.</p>
       </div>
     </div>
-    <div id="unity-warning"></div>
-  </div>
 
-  <div id="orientation-lock" aria-live="polite">
-    <div id="orientation-card">
-      <div id="orientation-emoji">🔄</div>
-      <h2 style="margin:0 0 8px">Rotate your device</h2>
-      <p style="margin:0;opacity:.85">This experience is landscape-only. Please rotate your device to continue.</p>
-    </div>
-  </div>
-
-  <script>
-    window.addEventListener("load", function () {
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("ServiceWorker.js");
-      }
-    });
-
-    var canvas = document.querySelector("#unity-canvas");
-    var loadingBar = document.querySelector("#unity-loading-bar");
-    var progressBarFull = document.querySelector("#unity-progress-bar-full");
-    var warningBanner = document.querySelector("#unity-warning");
-
-    function unityShowBanner(msg, type) {
-      function updateBannerVisibility() {
-        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-      }
-      var div = document.createElement('div');
-      div.innerHTML = msg;
-      warningBanner.appendChild(div);
-      if (type == 'error') div.style = 'background: red; padding: 10px;';
-      else {
-        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-        setTimeout(function() {
-          warningBanner.removeChild(div);
-          updateBannerVisibility();
-        }, 5000);
-      }
-      updateBannerVisibility();
-    }
-
-    var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/09d5daab403c7db0168e42ff42cd5f28.loader.js";
-    var config = {
-      arguments: [],
-      dataUrl: buildUrl + "/8e16d17a98aff6e6f869d99a00c8465d.data.unityweb",
-      frameworkUrl: buildUrl + "/5dfbd1306a74518362440e5983f7b1e9.framework.js.unityweb",
-      codeUrl: buildUrl + "/8dc04937bb29fda4fc162a09edb03533.wasm.unityweb",
-      streamingAssetsUrl: "StreamingAssets",
-      companyName: "Evoweb",
-      productName: "TruqapEP",
-      productVersion: "0.0.1",
-      showBanner: unityShowBanner,
-    };
-
-    function setViewportVars() {
-      try {
-        const vv = window.visualViewport;
-        const vw = vv ? vv.width  : window.innerWidth;
-        const vh = vv ? vv.height : window.innerHeight;
-        document.documentElement.style.setProperty('--vw', vw + 'px');
-        document.documentElement.style.setProperty('--vh', vh + 'px');
-        canvas.width  = Math.round(vw);
-        canvas.height = Math.round(vh);
-      } catch(e) {
-        document.documentElement.style.setProperty('--vw', window.innerWidth + 'px');
-        document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-    }
-
-    const orientationLock = document.getElementById("orientation-lock");
-    function isLandscape() { return window.innerWidth >= window.innerHeight; }
-    function updateOverlay() {
-      const landscape = isLandscape();
-      orientationLock.classList.toggle("visible", !landscape);
-      canvas.style.visibility = landscape ? "visible" : "hidden";
-    }
-
-    async function tryLockOrientationLandscape() {
-      try {
-        if (screen.orientation && screen.orientation.lock) {
-          await screen.orientation.lock('landscape');
+    <script>
+      window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("ServiceWorker.js");
         }
-      } catch (e) { /* ignore */ }
-    }
-
-    setViewportVars();
-    updateOverlay();
-    tryLockOrientationLandscape();
-
-    window.addEventListener('resize', () => { setViewportVars(); updateOverlay(); });
-    window.addEventListener('orientationchange', () => { setViewportVars(); updateOverlay(); tryLockOrientationLandscape(); });
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => { setViewportVars(); updateOverlay(); });
-      window.visualViewport.addEventListener('scroll', () => { setViewportVars(); updateOverlay(); });
-    }
-
-    loadingBar.style.display = "block";
-    var script = document.createElement("script");
-    script.src = loaderUrl;
-    script.onload = () => {
-      createUnityInstance(canvas, config, (progress) => {
-        progressBarFull.style.width = (progress * 100) + "%";
-      }).then((unityInstance) => {
-        loadingBar.style.display = "none";
-      }).catch((message) => {
-        alert(message);
       });
-    };
-    document.body.appendChild(script);
 
-    document.addEventListener("touchmove", (e) => {
-      if (orientationLock.classList.contains("visible")) e.preventDefault();
-    }, { passive: false });
-  </script>
-</body>
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function () {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/09d5daab403c7db0168e42ff42cd5f28.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/a3b0680bd76f46cf3794d4a51d04b089.data.unityweb",
+        frameworkUrl: buildUrl + "/5dfbd1306a74518362440e5983f7b1e9.framework.js.unityweb",
+        codeUrl: buildUrl + "/8dc04937bb29fda4fc162a09edb03533.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Evoweb",
+        productName: "TruqapEP",
+        productVersion: "0.0.1",
+        showBanner: unityShowBanner,
+        decompressionFallback: true
+      };
+
+      // (Kept as-is from your file)
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+      }
+
+      // === Portrait restriction only ===
+      const orientationLock = document.getElementById("orientation-lock");
+      function checkOrientation() {
+        const isPortrait = window.innerHeight > window.innerWidth;
+        orientationLock.classList.toggle("visible", isPortrait);
+      }
+      window.addEventListener("resize", checkOrientation);
+      window.addEventListener("orientationchange", checkOrientation);
+      checkOrientation();
+
+      // Unity boot (unchanged)
+      loadingBar.style.display = "block";
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
 </html>
