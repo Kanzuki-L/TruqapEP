@@ -17,8 +17,8 @@
       background: #000; overflow: hidden;
     }
     #game-frame {
-      width: 960px;   
-      height: 600px; 
+      width: 960px;  
+      height: 600px;
       position: relative;
       transform-origin: center center;
     }
@@ -38,18 +38,31 @@
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       margin: 0; text-align: center;
+      z-index: 2;  
     }
-    #unity-logo, #unity-progress-bar-empty, #unity-progress-bar-full { position: static; }
     #unity-logo {
       width: 128px; height: 128px;
+      background-image: url("TemplateData/unity-logo-dark.png");
       background-size: contain; background-repeat: no-repeat; background-position: center;
       margin-bottom: 16px;
     }
-    #unity-progress-bar-empty, #unity-progress-bar-full {
+    #unity-progress-bar-empty {
       width: 60%; max-width: 480px; min-width: 200px;
+      height: 18px;
+      background-image: url("TemplateData/progress-bar-empty-dark.png");
+      background-size: 100% 100%; background-repeat: no-repeat; background-position: center;
+      position: relative; 
+    }
+    #unity-progress-bar-full {
+      width: 0%; height: 100%;
+      background-image: url("TemplateData/progress-bar-full-dark.png");
+      background-size: 100% 100%; background-repeat: no-repeat; background-position: left center;
     }
 
-    #unity-warning { position: absolute; left: 0; right: 0; bottom: 12px; margin: 0 auto; text-align: center; }
+    #unity-warning {
+      position: absolute; left: 0; right: 0; bottom: 12px;
+      margin: 0 auto; text-align: center; z-index: 2;
+    }
 
     #rotate-overlay {
       position: fixed; inset: 0; display: none;
@@ -94,7 +107,7 @@
 
   <script>
     const DESIGN_W = 960;   
-    const DESIGN_H = 600;   
+    const DESIGN_H = 600; 
 
     const stage = document.getElementById('stage');
     const frame = document.getElementById('game-frame');
@@ -174,7 +187,7 @@
       decompressionFallback: true
     };
 
-    loadingBar.style.display = "block";
+    loadingBar.style.display = "flex";
 
     var script = document.createElement("script");
     script.src = loaderUrl;
@@ -183,13 +196,6 @@
         progressBarFull.style.width = (100 * progress) + "%";
       }).then((unityInstance) => {
         loadingBar.style.display = "none";
-        // Optional: pause while portrait
-        // function togglePause() {
-        //   const paused = rotateOverlay.style.display === 'flex' ? 1 : 0;
-        //   unityInstance.SendMessage("GameRoot", "SetPaused", paused);
-        // }
-        // window.addEventListener('resize', togglePause);
-        // window.addEventListener('orientationchange', togglePause);
       }).catch((message) => { alert(message); });
     };
     document.body.appendChild(script);
