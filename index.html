@@ -1,177 +1,185 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>TruqapEP</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <link rel="manifest" href="manifest.webmanifest">
-    <!-- NEW: make the viewport behave nicely on mobile -->
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>TruqapEP</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+  <link rel="stylesheet" href="TemplateData/style.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-    <!-- NEW: rotate overlay styles -->
-    <style>
-      html, body { margin: 0; height: 100%; background: #000; }
-      #unity-container { width: 100vw; height: 100vh; }
-      #unity-canvas { width: 100%; height: 100%; outline: none; }
+  <style>
+    html, body { height: 100%; margin: 0; background: #000; }
 
-      /* Fullscreen overlay that shows in PORTRAIT only */
-      #rotate-overlay {
-        position: fixed; inset: 0;
-        display: none;               /* toggled by JS */
-        align-items: center; justify-content: center;
-        background: #0b0b0f; color: #fff; z-index: 9999;
-        text-align: center; padding: 24px;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      }
-      #rotate-card {
-        max-width: 560px;
-        border-radius: 16px;
-        padding: 24px 20px;
-        background: rgba(255,255,255,0.06);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-      }
-      #rotate-title { font-size: 1.25rem; margin-bottom: 8px; font-weight: 700; }
-      #rotate-text { opacity: 0.85; line-height: 1.4; }
-      #rotate-icon {
-        width: 72px; height: 72px; margin: 12px auto 16px;
-        border: 3px solid #fff; border-radius: 12px; position: relative;
-        transform: rotate(90deg);
-      }
-      #rotate-icon::after {
-        content: ""; position: absolute; inset: 10px; border: 3px solid #fff; border-radius: 8px;
-      }
-      #try-lock {
-        margin-top: 16px; padding: 10px 14px; border-radius: 10px;
-        background: #1e90ff; color: #fff; border: 0; font-weight: 600;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- NEW: Portrait overlay -->
-    <div id="rotate-overlay" role="dialog" aria-live="polite">
-      <div id="rotate-card">
-        <div id="rotate-title">Rotate your device</div>
-        <div id="rotate-icon"></div>
-        <div id="rotate-text">This game is designed for landscape. Please rotate your device to continue.</div>
-        <button id="try-lock" type="button">Try lock to landscape</button>
-      </div>
+    #stage {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #game-frame {
+      width: 960px;         
+      height: 600px;         
+      position: relative;
+      transform-origin: center center;
+    }
+
+    #unity-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      outline: none;
+      image-rendering: optimizeSpeed;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      image-rendering: pixelated;
+    }
+
+    #unity-loading-bar, #unity-warning, #unity-logo,
+    #unity-progress-bar-empty, #unity-progress-bar-full {
+      position: relative;
+    }
+
+    #rotate-overlay {
+      position: fixed; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      background: #0b0b0f; color: #fff; z-index: 9999;
+      text-align: center; padding: 24px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    #rotate-card { max-width: 560px; border-radius: 16px; padding: 24px 20px; background: rgba(255,255,255,.06); }
+    #rotate-title { font-size: 1.25rem; margin-bottom: 8px; font-weight: 700; }
+    #rotate-text { opacity: .85; line-height: 1.4; }
+    #try-lock { margin-top: 16px; padding: 10px 14px; border-radius: 10px; background: #1e90ff; color:#fff; border:0; font-weight:600;}
+  </style>
+</head>
+<body>
+
+  <div id="rotate-overlay" role="dialog" aria-live="polite">
+    <div id="rotate-card">
+      <div id="rotate-title">Rotate your device</div>
+      <div id="rotate-text">This game is designed for landscape. Please rotate your device to continue.</div>
+      <button id="try-lock" type="button">Try lock to landscape</button>
     </div>
+  </div>
 
-    <div id="unity-container">
-      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
+  <div id="stage">
+    <div id="game-frame">
+      <div id="unity-container">
+        <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+        <div id="unity-loading-bar">
+          <div id="unity-logo"></div>
+          <div id="unity-progress-bar-empty">
+            <div id="unity-progress-bar-full"></div>
+          </div>
         </div>
+        <div id="unity-warning"></div>
       </div>
-      <div id="unity-warning"></div>
     </div>
+  </div>
 
-    <script>
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var warningBanner = document.querySelector("#unity-warning");
+  <script>
+    const DESIGN_W = 960;  
+    const DESIGN_H = 600;  
 
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+    const stage = document.getElementById('stage');
+    const frame = document.getElementById('game-frame');
+    const canvas = document.getElementById('unity-canvas');
+
+    const rotateOverlay = document.getElementById('rotate-overlay');
+    const tryLockBtn = document.getElementById('try-lock');
+
+    function isLandscape() {
+      return window.matchMedia ? window.matchMedia('(orientation: landscape)').matches
+                               : window.innerWidth >= window.innerHeight;
+    }
+
+    function fitFrame() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      const scaleX = vw / DESIGN_W;
+      const scaleY = vh / DESIGN_H;
+      const scale = Math.min(1, scaleX, scaleY);
+
+      frame.style.transform = `scale(${scale})`;
+      rotateOverlay.style.display = isLandscape() ? 'none' : 'flex';
+
+      canvas.style.visibility = isLandscape() ? 'visible' : 'hidden';
+    }
+
+    async function tryLockLandscape() {
+      try {
+        if (document.fullscreenElement == null && stage.requestFullscreen) {
+          await stage.requestFullscreen();
         }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div); updateBannerVisibility();
-          }, 5000);
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock('landscape');
         }
-        updateBannerVisibility();
+      } catch (e) {
+        /* ignore */
+      } finally {
+        fitFrame();
       }
+    }
 
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/09d5daab403c7db0168e42ff42cd5f28.loader.js";
-      var config = {
-        arguments: [],
-        dataUrl: buildUrl + "/8eac540d473e383a1591a6ff15d83bac.data.unityweb",
-        frameworkUrl: buildUrl + "/5dfbd1306a74518362440e5983f7b1e9.framework.js.unityweb",
-        codeUrl: buildUrl + "/8dc04937bb29fda4fc162a09edb03533.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "Evoweb",
-        productName: "TruqapEP",
-        productVersion: "0.0.1",
-        decompressionFallback: true
-      };
+    window.addEventListener('resize', fitFrame);
+    window.addEventListener('orientationchange', fitFrame);
+    document.addEventListener('DOMContentLoaded', fitFrame);
+    tryLockBtn.addEventListener('click', tryLockLandscape);
 
-      loadingBar.style.display = "block";
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var warningBanner = document.querySelector("#unity-warning");
 
-      // --- LANDSCAPE ENFORCER (NEW) ---
-      const rotateOverlay = document.getElementById('rotate-overlay');
-      const tryLockBtn = document.getElementById('try-lock');
-
-      function isLandscape() {
-        // Use matchMedia when available for better accuracy
-        if (window.matchMedia) {
-          return window.matchMedia("(orientation: landscape)").matches;
-        }
-        return window.innerWidth >= window.innerHeight;
+    function unityShowBanner(msg, type) {
+      function updateBannerVisibility() {
+        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
       }
-
-      function applyOrientationGuard() {
-        const landscape = isLandscape();
-        rotateOverlay.style.display = landscape ? "none" : "flex";
-        // Optionally hide the canvas in portrait to save GPU
-        canvas.style.visibility = landscape ? "visible" : "hidden";
+      var div = document.createElement('div');
+      div.innerHTML = msg;
+      warningBanner.appendChild(div);
+      if (type == 'error') div.style = 'background: red; padding: 10px;';
+      else {
+        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+        setTimeout(function () { warningBanner.removeChild(div); updateBannerVisibility(); }, 5000);
       }
+      updateBannerVisibility();
+    }
 
-      // Try to lock to landscape when user taps the button (works on some Android browsers)
-      async function tryLockLandscape() {
-        try {
-          // Enter fullscreen first (often required for lock)
-          if (document.fullscreenElement == null && container.requestFullscreen) {
-            await container.requestFullscreen();
-          }
-          if (screen.orientation && screen.orientation.lock) {
-            await screen.orientation.lock('landscape');
-          }
-        } catch (e) {
-          // iOS Safari and some others will reject; overlay remains as fallback
-          // console.log("Orientation lock not supported:", e);
-        } finally {
-          applyOrientationGuard();
-        }
-      }
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/09d5daab403c7db0168e42ff42cd5f28.loader.js";
+    var config = {
+      arguments: [],
+      dataUrl: buildUrl + "/8eac540d473e383a1591a6ff15d83bac.data.unityweb",
+      frameworkUrl: buildUrl + "/5dfbd1306a74518362440e5983f7b1e9.framework.js.unityweb",
+      codeUrl: buildUrl + "/8dc04937bb29fda4fc162a09edb03533.wasm.unityweb",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "Evoweb",
+      productName: "TruqapEP",
+      productVersion: "0.0.1",
+      decompressionFallback: true
+    };
 
-      // Re-check on resize/orientation changes
-      window.addEventListener('resize', applyOrientationGuard);
-      window.addEventListener('orientationchange', applyOrientationGuard);
-      tryLockBtn.addEventListener('click', tryLockLandscape);
-      document.addEventListener('DOMContentLoaded', applyOrientationGuard);
-      // --- END LANDSCAPE ENFORCER ---
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = (100 * progress) + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-          // Optional: pause Unity while in portrait (uncomment if you have a pause hook)
-          // function toggleUnityPause() {
-          //   unityInstance.SendMessage("GameRoot", "SetPaused", rotateOverlay.style.display === "flex" ? 1 : 0);
-          // }
-          // window.addEventListener('resize', toggleUnityPause);
-          // window.addEventListener('orientationchange', toggleUnityPause);
-        }).catch((message) => {
-          alert(message);
-        });
-      };
-      document.body.appendChild(script);
-    </script>
-  </body>
+    loadingBar.style.display = "block";
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressBarFull.style.width = (100 * progress) + "%";
+      }).then((unityInstance) => {
+        loadingBar.style.display = "none";
+        // Optional: pause while portrait
+        // function togglePause() {
+        //   const paused = rotateOverlay.style.display === 'flex' ? 1 : 0;
+        //   unityInstance.SendMessage("GameRoot", "SetPaused", paused);
+        // }
+        // window.addEventListener('resize', togglePause);
+        // window.addEventListener('orientationchange', togglePause);
+      }).catch((message) => { alert(message); });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
 </html>
