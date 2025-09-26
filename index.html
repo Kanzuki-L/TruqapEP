@@ -7,13 +7,13 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <link rel="manifest" href="manifest.webmanifest">
-
     <style>
+      /* Portrait restriction overlay ONLY */
       #orientation-lock {
         display: none;
         position: fixed;
         inset: 0;
-        background: #250E62;
+        background: #000;
         color: #fff;
         z-index: 9999;
         justify-content: center;
@@ -37,6 +37,7 @@
       <div id="unity-warning"> </div>
     </div>
 
+    <!-- Portrait restriction overlay -->
     <div id="orientation-lock" aria-live="polite">
       <div>
         <div style="font-size:48px;line-height:1">🔄</div>
@@ -58,6 +59,7 @@
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var warningBanner = document.querySelector("#unity-warning");
 
+      // Shows a temporary message banner/ribbon for a few seconds, or a permanent error.
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
           warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
@@ -77,20 +79,20 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/09d5daab403c7db0168e42ff42cd5f28.loader.js";
+      var loaderUrl = buildUrl + "/0a080903b2b7c90a461037c84a1bafe1.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/b681f0aeab80150c903a4a45fffb4a5f.data.unityweb",
-        frameworkUrl: buildUrl + "/5dfbd1306a74518362440e5983f7b1e9.framework.js.unityweb",
-        codeUrl: buildUrl + "/8dc04937bb29fda4fc162a09edb03533.wasm.unityweb",
+        dataUrl: buildUrl + "/5e77f00cecde2531a0d07928602e5136.data.unityweb",
+        frameworkUrl: buildUrl + "/4045c43b9c6c5cc20373efd2db95cb59.framework.js.unityweb",
+        codeUrl: buildUrl + "/54deb8572f34b8b9db403c43d2e93dc9.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Evoweb",
-        productName: "TruqapEP",
+        productName: "Truqap",
         productVersion: "0.0.1",
         showBanner: unityShowBanner,
-        decompressionFallback: true
       };
 
+      // Keep your original mobile viewport meta behavior
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         var meta = document.createElement('meta');
         meta.name = 'viewport';
@@ -98,6 +100,7 @@
         document.getElementsByTagName('head')[0].appendChild(meta);
       }
 
+      // === Portrait restriction only ===
       const orientationLock = document.getElementById("orientation-lock");
       function checkOrientation() {
         const isPortrait = window.innerHeight > window.innerWidth;
@@ -107,6 +110,7 @@
       window.addEventListener("orientationchange", checkOrientation);
       checkOrientation();
 
+      // Unity boot (unchanged)
       loadingBar.style.display = "block";
       var script = document.createElement("script");
       script.src = loaderUrl;
